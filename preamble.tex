@@ -1,0 +1,97 @@
+%
+%	preamble.tex
+%
+%	Final Report: Document Preamble
+%
+%	John Hughes and Michael Jean
+%	University of Manitoba
+%
+
+\usepackage[T1]{fontenc}
+%\usepackage[latin9]{inputenc}
+\usepackage[utf8x]{inputenc}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\usepackage{array}
+\usepackage{babel}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage[letterpaper]{geometry}
+\usepackage{graphicx}
+\usepackage{lastpage}
+\usepackage{nomencl}
+\usepackage{tikz}
+\usepackage{tikz-timing}[2009/05/15]
+\usepackage{subfigure}
+
+% the following is useful when we have the old nomencl.sty package
+\providecommand{\printnomenclature}{\printglossary}
+\providecommand{\makenomenclature}{\makeglossary}
+\makenomenclature
+
+% Set Margins
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1.5in,rmargin=1in}
+
+%\setlength{\parskip}{12 pt}
+\setlength{\parskip}{\medskipamount}
+\makeatletter
+\pagestyle{fancy}
+
+\fancyhead[LE,LO]{Final Report}
+\fancyfoot[LE,LO]{
+  \tiny{
+    John Hughes, john\_hughes@umanitoba.ca\\
+    Michael Jean, michael.jean@shaw.ca
+  }
+}
+
+\fancyfoot[CE,CO]{\thepage\ of \pageref{LastPage}}
+\fancyfoot[RE,RO]{
+  \tiny{
+    \jobname{.tex}\\
+    \today
+  }
+}
+
+\usetikzlibrary{shapes,arrows,shadows,calc}
+
+\tikzstyle{block} = [ draw=red!50!black!50, % 50% red, 50% black
+		      top color=white,
+		      bottom color=red!50!black!20,
+		      rectangle,
+		      very thick,
+		      minimum height=3em,
+		      minimum width=6em,
+		      inner sep=0.5em,
+		      drop shadow,
+		      text width=2cm,
+		      text centered]
+\tikzstyle{bus} = [coordinate]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+
+\tikzstyle{small block} = [ draw=red!50!black!50, % 50% red, 50% black
+		      top color=white,
+		      bottom color=red!50!black!20,
+		      rectangle,
+		      very thick,
+		      minimum height=3em,
+		      minimum width=3em,
+		      inner sep=0.5em,
+		      drop shadow,
+		      text width=1cm,
+		      text centered]
+
+\usepackage[
+  unicode=true,
+  pdfusetitle,
+  bookmarks=true,
+  bookmarksnumbered=true,
+  bookmarksopen=false,
+  breaklinks=false,
+  pdfborder={0 0 0},
+  backref=false,
+  colorlinks=false
+] {hyperref}

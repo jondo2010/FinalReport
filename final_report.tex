@@ -1,0 +1,60 @@
+%
+%	proposal.tex
+%
+%	Proposal: Outline
+%
+%	John Hughes and Michael Jean
+%	University of Manitoba
+%
+
+\documentclass[letterpaper,11pt,english]{scrreprt}
+
+% Preamble
+
+\include{preamble}
+\begin{document}
+
+% Title Page
+
+\subject{Distributed Automotive Sensor/Actuator Network}
+\title{Final Report}
+
+\author{John Hughes\\
+Michael Jean\\
+Group Advisor: Dr. W. Kinsner}
+
+\maketitle
+\begin{abstract}
+Abstract
+\end{abstract}
+
+\tableofcontents{}
+
+\listoffigures
+\listoftables
+
+\printnomenclature{}
+
+\include{introduction}
+
+\include{system_architecture}
+
+\include{future_work}
+
+\include{conclusion}
+
+% References
+
+\bibliographystyle{IEEEtran}
+\clearpage
+\addcontentsline{toc}{chapter}{\bibname}
+\bibliography{Reference/datasheets,IEEEfull}
+
+
+\appendix
+
+\chapter{libxbee\label{cha:libxbee}}
+
+% Finito
+
+\end{document}

@@ -1,0 +1,13 @@
+*~
+*.lyx
+*.backup
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lot
+*.nlo
+*.out
+*.pdf
+*.toc
