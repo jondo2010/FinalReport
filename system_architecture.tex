@@ -20,17 +20,9 @@ Data from the ECU is primarily the concern of the engine section head on the tea
 
 \paragraph*{DTASwin}
 
-DTASwin is the engine management software provided by DTAFast for
-use with the ECU. All ECU configuration is done through the software,
-and all module parameters may be observed in real-time. The software
-interacts with the ECU through a proprietary protocol over an RS232
-link.
+DTASwin is the engine management software provided by DTAFast for use with the ECU. All ECU configuration is done through the software, and all module parameters may be observed in real-time. The software interacts with the ECU through a proprietary protocol over an RS232 link.
 
-An undocumented protocol feature required for the DTASwin software
-to function properly is that the software requires the Data Terminal
-Ready (DTR) signal to be pulled high when initially connecting to
-the ECU. Subsequent disconnections and reconnections after the software
-has already initialized do not have this requirement.
+An undocumented protocol feature required for the DTASwin software to function properly is that the software requires the Data Terminal Ready (DTR) signal to be pulled high when initially connecting to the ECU. Subsequent disconnections and reconnections after the software has already initialized do not have this requirement.
 
 
 \paragraph*{ECU Data Throughput}
@@ -42,19 +34,9 @@ A linux serial sniffer utility
 
 \section{Theory of Operation}
 
-The engine management data requires a duplex serial link between the
-ECU and a single laptop running the DTASwin software. Telemetry for
-this will be implemented using a point to point wireless transmission
-scheme. The address of the modem used by the engine management laptop
-will be programmed into the telemetry module ahead of time, and the
-address of the car's modem will be programmed into the driver running
-on the laptop.
+The engine management data requires a duplex serial link between the ECU and a single laptop running the DTASwin software. Telemetry for this will be implemented using a point to point wireless transmission scheme. The address of the modem used by the engine management laptop will be programmed into the telemetry module ahead of time, and the address of the car's modem will be programmed into the driver running on the laptop.
 
-During operation, data originating from the ECU will be received by
-the telemetry module, will be packetized, and will be sent over the
-modem specifically to the engine management laptop. Likewise, data
-originating from the DTASwin software will be packetized by the driver,
-and addressed to the car.
+During operation, data originating from the ECU will be received by the telemetry module, will be packetized, and will be sent over the modem specifically to the engine management laptop. Likewise, data originating from the DTASwin software will be packetized by the driver, and addressed to the car.
 
 \section{Methodology}
 \label{sec:methodology}
@@ -65,18 +47,11 @@ and addressed to the car.
 
 \subsection{Wireless Modem}
 
-To meet the range and data throughput requirements for the telemetry
-system, an \emph{XBee Pro} wireles modem was used.
+To meet the range and data throughput requirements for the telemetry system, an \emph{XBee Pro} wireles modem was used.
 
-The XBee requires 3.3v I/O levels and power supply, and so a second
-linear voltage regulator was used in the design, the LT1521 from Linear
-Technology.
+The XBee requires 3.3v I/O levels and power supply, and so a second linear voltage regulator was used in the design, the LT1521 from Linear Technology.
 
-Since the AT90CAN has only 2 built-in UARTS that were used for the
-RS232 interfaces to the ECU and DAQ, an third external UART was added
-to the design. The MAX3100 is a SPI-interfaced UART with an 8 word
-deep FIFO buffer. It is interfaced to the AT90's SPI pins and has
-an active-low IRQ line connected to external interrupt line EXT7.
+Since the AT90CAN has only 2 built-in UARTS that were used for the RS232 interfaces to the ECU and DAQ, an third external UART was added to the design. The MAX3100 is a SPI-interfaced UART with an 8 word deep FIFO buffer. It is interfaced to the AT90's SPI pins and has an active-low IRQ line connected to external interrupt line EXT7.
 
 %
 \begin{table}
@@ -94,8 +69,7 @@ RF Data Rate  & $250,000\, bps$\tabularnewline
 
 \subsection{Power Consumption}
 
-During steady wireless transmission, current draw from the bench power
-supply remained around $200\, mA$.
+During steady wireless transmission, current draw from the bench power supply remained around $200\, mA$.
 
 \section{Software Design}
 
@@ -103,63 +77,56 @@ supply remained around $200\, mA$.
 
 \section{Software}
 
-The primary objective of the software running on the Telemetry Module
-is to push data around from various sources to various sinks. It uses
-the interrupt-driven USART drivers Mike wrote for both the on-board
-USARTs of the AT90, as well as the MAX3100 external USART extensively.
-These USART drivers are discussed in section ?? %TODO
+The primary objective of the software running on the Telemetry Module is to push data around from various sources to various sinks. It uses the interrupt-driven USART drivers Mike wrote for both the on-board USARTs of the AT90, as well as the MAX3100 external USART extensively. These USART drivers are discussed in section ?? %TODO
 
 \subsection{MAX3100 SPI UART driver}
 
-An interrupt-driven driver was written to interface with the MAX3100
-uart chip which allows asynchronous serial communication with the
-XBee modem on the Telemetry Module. The same circular buffer approach
-as with the internal USART drivers was taken, and in fact the drivers
-use very similar buffering code. Additionally, the software interfaces
-to the drivers were made as close as possible to allow interchangability
-by the main module software.
+An interrupt-driven driver was written to interface with the MAX3100 uart chip which allows asynchronous serial communication with the XBee modem on the Telemetry Module. The same circular buffer approach as with the internal USART drivers was taken, and in fact the drivers use very similar buffering code. Additionally, the software interfaces to the drivers were made as close as possible to allow interchangability by the main module software.
 
-The datahseet for the MAX3100 states that the minimum SPI Clock period
-is $t_{CP}=238\, ns$, which results in a maximum frequency of approximately
-$4.2\, MHz$ \cite{MAX3100}. The SPI periferal was thus set to use
-1/4 of the system clocks frequency resulting in $4\, MHz$.
+The datahseet for the MAX3100 states that the minimum SPI Clock period is $t_{CP}=238\, ns$, which results in a maximum frequency of approximately $4.2\, MHz$ \cite{MAX3100}. The SPI periferal was thus set to use 1/4 of the system clocks frequency resulting in $4\, MHz$.
 
-The max3100 was configured to operate at 115200 baud which was matched
-with the XBee modem's interface rate. A simple throughput stress test
-was performed that continuously wrote data in 16 byte chunks into
-the max3100 transmit buffer. A fixed-length 32 byte buffer was never
-overrun with this test, and an actual data throughput of $8.251\, kB/s$
-was observed with a logic analyser.
+The max3100 was configured to operate at 115200 baud which was matched with the XBee modem's interface rate. A simple throughput stress test was performed that continuously wrote data in 16 byte chunks into the max3100 transmit buffer. A fixed-length 32 byte buffer was never overrun with this test, and an actual data throughput of $8.251\, kB/s$ was observed with a logic analyser.
 
 
 \subsection{libxbee}
 
-Additionally, a driver to interact with the XBee modem through the
-MAX3100 was written by John. This driver, called \emph{libxbee} is
-available in Appendix \ref{cha:libxbee}. The XBee driver has two
-functions: 
+Additionally, a driver to interact with the XBee modem through the MAX3100 was written by John. This driver, called \emph{libxbee} is available in Appendix \ref{cha:libxbee}. The XBee driver has two functions: 
 \begin{enumerate}
-\item to send and receive packetized data from the modem on behalf of the
-user software as per the XBee's API specification \cite{XBeeManual};
-\item and to set the modem into API operation and manage the modem's operating
-state. 
+\item to send and receive packetized data from the modem on behalf of the user software as per the XBee's API specification \cite{XBeeManual};
+\item and to set the modem into API operation and manage the modem's operating state. 
 \end{enumerate}
-\emph{libxbee} implements the binary packet protocol described in
-the XBee manual, and is able to send and receive unicast and multicast
-packets. The driver is only capable of sending packets to 16-bit addresses.
-Full 64-bit address mode was not implemented as it was not needed
-in our 3 or 4 node network. The driver is also capable of sending
-command-type packets to the modem and reading the response.
+\emph{libxbee} implements the binary packet protocol described in the XBee manual, and is able to send and receive unicast and multicast packets. The driver is only capable of sending packets to 16-bit addresses. Full 64-bit address mode was not implemented as it was not needed in our 3 or 4 node network. The driver is also capable of sending command-type packets to the modem and reading the response.
 
-Managing the modem's state was implemented as a state machine. Since
-minimal functionality was required, only a handful of AT commands
-were implemented. The driver is able to push the modem into API mode,
-after which all communication is done using the packet interface.
+Managing the modem's state was implemented as a state machine. Since minimal functionality was required, only a handful of AT commands were implemented. The driver is able to push the modem into API mode, after which all communication is done using the packet interface.
 
-Similar to the rest of the software drivers implemented, \emph{libxbee}
-uses callbacks to provide the user software with incoming data. Function
-pointers to the USART api are also used, which makes it possible to
-reconfigure libxbee to use a different USART on-the-fly.
+Similar to the rest of the software drivers implemented, \emph{libxbee} uses callbacks to provide the user software with incoming data. Function pointers to the USART api are also used, which makes it possible to reconfigure libxbee to use a different USART on-the-fly.
+
+\subsection{Telemetry Operation}
+
+\subsubsection{Buffering Issues}
+
+Although initial average data throughput rates for both the DAC and the ECU were measured as part of the research done at the beginning of the project, non-trivial buffering issues did arise in the implementation of the telemetry module software. After several weeks of work spent debugging throughput problems with the module software, and with the aide of a protocol analyser, the root of the problem was tracked down. The AT90CAN microcontroller's interrupt vectors are fixed at the factory, therefore the priority of interrupts on the microcontroller is fixed. Unfortunately this lead to a resource starvation issue. The MAX3100 UART uses an external interrupt line, which has priority over the internal UART interrupts. When there is data in the MAX3100's transmit buffer, it will starve the internal UART interrupt to a certain extent. This was investigated by saturating the MAX3100 output buffer with a constant stream of data, and then inputting some bytes to the internal UART. Single input bytes were read properly, but any long stream of incoming bytes (more than 4 in a row) would cause hardware input buffer overruns in the built-in UART, and incoming data would be lost.
+
+\begin{figure}[ht]
+  \centering
+  \label{fig:ecu_data}
+  \begin{tikztimingtable}[timing/nice tabs]
+    $ECU_{Rx}$ & Z 10D{Polling sequence (7 bytes)} 14F Z \\
+    $ECU_{Tx}$ & 12Z 6D{Reply sequence} ;[dotted] 2D{...}; 5D{(539 bytes)} Z\\
+    \extracode
+      %\tableheader{Signal}{Timing}
+      \tablerules
+  \end{tikztimingtable}
+  \caption{ECU Serial Data Example}
+\end{figure}
+
+Based on this knowledge, we were able to classify conditions where the software would be unable to accurately process the incoming data. Unfortunately the method that the ECU transmits it's data falls within this characterization. When the ECU is communicating with the DTASWin software, the software will send a handful of bytes (around 7) to the ECU, and the ECU will reply with one large packet of approximately 540 bytes. If the MAX3100 is transmitting a large amount of data when this large packet comes in, bytes will be lost from the interrupt starvation issue.
+
+Having determined the problem, several options lay before us to resolve the issue:
+\begin{itemize}
+  \item By lumping the ISR handlers for both the internal UART and the MAX3100 together, it would be possible to conditionally alter the priority of the processing to allow the incoming data to take precedence. This would however override the natural encapsulation that the two drivers had, and would require writing specialized drivers for use only on the telemetry module.
+  \item Throttling the transmission of data to the MAX3100 by sequenced enabling and disabling of the interrupt could also reduce the starvation issue, but getting the sequencing and timing right would be difficult and more than likely result in further problems.
+\end{itemize}
 
 \chapter{Engine Module}
 
@@ -197,12 +164,10 @@ Number of channels  & 2 \tabularnewline
 \end{table}
 
 
-An efficient method was devised to generate 2 synchronized PWM signals
-from the L9822E driver chip. The $32\, kHz$ external crystal was
-used as the input to the 8-bit TIM2 timer periferal on the microcontroller.
-The input to the timer was first scaled by 8 which provided a timebase:
+An efficient method was devised to generate 2 synchronized PWM signals from the L9822E driver chip. The $32\, kHz$ external crystal was used as the input to the 8-bit TIM2 timer periferal on the microcontroller. The input to the timer was first scaled by 8 which provided a timebase:
 \begin{equation}
-TB=\frac{32.768\, kHz}{8}=4.096\, kHz\end{equation}
+TB=\frac{32.768\, kHz}{8}=4.096\, kHz
+\end{equation}
 
 
 The timebase period is then given by: \begin{equation}
@@ -213,28 +178,13 @@ We then define a constant scaling factor for the PWM generator: \begin{equation}
 {PWM\_DUTY\_SCALE}=\frac{T_{PWM}}{TB}\approx205\end{equation}
 
 
-By loading the timers compare register with with a value scaled with
-the constant scaling factor, we can cause the timer to generate an
-interrupt precisely when a level change in the PWM is required.
+By loading the timers compare register with with a value scaled with the constant scaling factor, we can cause the timer to generate an interrupt precisely when a level change in the PWM is required.
 
-When generating 2 waveforms with the same timer periferal, 8 combinations
-of duty cycles of channels A and B were identified, and can be seen
-in Figure \ref{fig:pwm_cases}.
+When generating 2 waveforms with the same timer periferal, 8 combinations of duty cycles of channels A and B were identified, and can be seen in Figure \ref{fig:pwm_cases}.
 
-Since the waveforms are synchronized, it can be seen that there are
-only 2 cases where 3 transitions per period are required, corresponding
-to \ref{fig:pwm_cases_1} and \ref{fig:pwm_cases_2}. This happens
-when both channels have $0<Duty<100\%$. 2 cases are also apparent
-when no transitions are required, shown in \ref{fig:pwm_cases_7}
-and \ref{fig:pwm_cases_8}.
+Since the waveforms are synchronized, it can be seen that there are only 2 cases where 3 transitions per period are required, corresponding to \ref{fig:pwm_cases_1} and \ref{fig:pwm_cases_2}. This happens when both channels have $0<Duty<100\%$. 2 cases are also apparent when no transitions are required, shown in \ref{fig:pwm_cases_7} and \ref{fig:pwm_cases_8}.
 
-An efficient generating routine was constructed to effect the level
-transitions and to reset the timer to interrupt at the next transition.
-For the two cases requiring 3 transitions per period, the timer interrupts
-3 times per period. For the two cases where both channels have duty
-cycle between 0 and 100\%, the routine still interrupts once to allow
-for a change in duty cycle. For the rest of the cases described, the
-timer only interrupts twice per PWM period.
+An efficient generating routine was constructed to effect the level transitions and to reset the timer to interrupt at the next transition. For the two cases requiring 3 transitions per period, the timer interrupts 3 times per period. For the two cases where both channels have duty cycle between 0 and 100\%, the routine still interrupts once to allow for a change in duty cycle. For the rest of the cases described, the timer only interrupts twice per PWM period.
 
 \input{Figures/pwm_cases.tex}
 
