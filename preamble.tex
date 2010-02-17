@@ -25,7 +25,16 @@
 \usepackage{nomencl}
 \usepackage{tikz}
 \usepackage{tikz-timing}[2009/05/15]
+\usetikztiminglibrary{nicetabs}
+\tikzset{timing/no nice tabs}
+\tikzset{timing/interval/normal}
+\tikzset{timing/nodes/old center}
 \usepackage{subfigure}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{flafter,fnpos}
+\usepackage{booktabs}
+\usepackage{supertabular}
 
 % the following is useful when we have the old nomencl.sty package
 \providecommand{\printnomenclature}{\printglossary}
@@ -41,20 +50,21 @@
 \pagestyle{fancy}
 
 \fancyhead[LE,LO]{Final Report}
-\fancyfoot[LE,LO]{
-  \tiny{
-    John Hughes, john\_hughes@umanitoba.ca\\
-    Michael Jean, michael.jean@shaw.ca
-  }
-}
 
-\fancyfoot[CE,CO]{\thepage\ of \pageref{LastPage}}
-\fancyfoot[RE,RO]{
-  \tiny{
-    \jobname{.tex}\\
-    \today
-  }
-}
+% \fancyfoot[LE,LO]{
+%   \tiny{
+%     John Hughes, john\_hughes@umanitoba.ca\\
+%     Michael Jean, michael.jean@shaw.ca
+%   }
+% }
+
+%\fancyfoot[CE,CO]{\thepage\ of \pageref{LastPage}}
+% \fancyfoot[RE,RO]{
+%   \tiny{
+%     \jobname{.tex}\\
+%     \today
+%   }
+% }
 
 \usetikzlibrary{shapes,arrows,shadows,calc}
 
