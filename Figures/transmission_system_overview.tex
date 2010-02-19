@@ -1,5 +1,5 @@
 \begin{tikzpicture} [auto, node distance=2cm, draw=black!70, >=stealth', text width=1cm, minimum width=1.5cm]
-  \node [block, minimum width=12cm, text width=5cm] (engine) {Engine Module};
+  \node [module, minimum width=12cm, text width=5cm] (engine) {Engine Module};
 
   \node [small block] at ($(engine.south east)!0.1!(engine.south west)+(0,-1.5cm)$) (clutch_valve) {Clutch Valve};
   \node [small block] at ($(engine.south east)!0.5!(engine.south west)+(0,-1.5cm)$) (shift_valve) {Shift Valve};

@@ -10,7 +10,9 @@
 \chapter{Design}
 \label{ch:design}
 
-Electronic control is achieved by divided the vehicle into several independent systems that communicate over a shared network. These systems include
+The overall end goal of this project is to develop 4 electronic modules for the 2010 Formula SAE vehicle, as described before. The discussion of design in this chapter will also include information about the larger systems that each module is a part of in order to provide context. The mechanical portions of the design will be discussed in less detail than the electrical systems, since this is the focus of this thesis.
+
+The architecture can be divided into 4 distinct systems that communicate over a shared network. These systems are:
 
 \begin{itemize}
 \item the \emph{engine} system;
@@ -24,7 +26,7 @@ Electronic control is achieved by divided the vehicle into several independent s
 
 \nomenclature{PCB}{Printed Circuit Board}
 
-At the heart of each system is a module that controls all aspects of the system's function. This module is implemented on a custom \emph{Printed Circuit Board} (PCB) with an \emph{AT90CAN128} micro-controller from Atmel. All software is written in C and uploaded through a standard IEEE 1149.1 JTAG interface. Each module has common {}``life-support'' systems such as a voltage regulator and decoupling capacitors. A specialized 23-pin header is attached to the PCB to connect it to the inter-module network, the power supply, and whatever systems it needs to interact with.
+At the heart of each system is a module that controls all aspects of the system's function, or compliments existing functionality. Each module is implemented on a custom \emph{Printed Circuit Board} (PCB) with an \emph{AT90CAN128} micro-controller from Atmel. All software is written in C and uploaded through a standard IEEE 1149.1 JTAG interface. Each module has common {}``life-support'' systems such as a voltage regulator and decoupling capacitors. A specialized 23-pin header is attached to the PCB to connect it to the inter-module network, the power supply, and whatever systems it needs to interact with.
 
 \section{Inter-module Communication}
 \label{sec:inter_module_communication}
@@ -48,9 +50,9 @@ All electronic systems on the vehicle communicate over a two-wire \emph{Controll
 	\end{tabular}
 \end{table}
 
-Testing system functionality requires a means of injecting messages onto the CAN bus that links the various modules together. To facilitate this, a \emph{network testing} module is used. This module allows us to interface directly with individual nodes on the network, and to test parts of the system independently of one another. 
+Testing system functionality requires a means of injecting messages onto the CAN bus that links the various modules together. To facilitate this, a \emph{network testing} module was developed. This module allows us to interface directly with individual nodes on the network, and to test parts of the system independently of one another. 
 
-The network tester consists of a PC-interfaceable micro-controller that will run a set of test suites. Each test suite will test all functions of a given module by sending and receiving the expected messages on the network to the module. This will greatly ease the development and debugging of the software on each node.
+The network tester consists of an off-the-shelf AT90CAN128 development board from Olimex, and custom software. The PC-interfaceable network tester runs a set of test suites. Each test suite will test all functions of a given module by sending and receiving the expected messages on the network to the module. This allowed us to test and debug each module independently as well as the entire network together.
 
 %
 % Engine System
@@ -79,15 +81,26 @@ The three sub-systems consist of a network of electromechanical actuators, senso
 
 \subsection{Transmission System}
 
-Formula SAE cars designed at the University of Manitoba have utilized an electro-pneumatic shift actuation system for the past several years. This system is controlled electronically from the steering wheel by paddles. A compressed air cylinder is used to feed air to pneumatic pistons, which apply force to the levers on the clutch shaft and shift shaft. Binary solenoid valves apply pressure to either side of the pistons. 
+In Section \ref{sec:transmission_control_background} the background of the transmission and the control system used in previous years was discussed. The design of the transmission control scheme for this project therefore improves upon the previous generation by targetting several of the noted deficiencies, while reusing specific portions that worked well.
 
-In 2007, electronic control of the solenoid valves was realized by a set of switches on the steering wheel, which switched the low-current side of a set of relays. This in turn fed current to the valves, causing the pistons to move. In this system, the timing of the mechanical interaction with the transmission was entirely dependent on how long the driver held down the paddles. This required a lot of effort from the driver, and often resulted in missed shifts. It also caused heavy mechanical stress on the transmission. 
+The decision was made to continue to use pneumatic actuators, although extensive research was made into the possibility of using electric actuators with gearboxes. It was determined that a far greater force-to-weight ratio could be achieved with the pneumatic actuators in comparison with the electric, as well as significant cost savings.
 
-The 2008/2009 Formula SAE car improved on the 2007 design by replacing the relays with high-current solid state drivers. The timing signals to the solenoid valves were precisely controlled with an ARM7 micro-controller. Shift timing could be programmed, and no longer depended on how long the paddles were held. This  reduced the effort required from the driver and also reduced possible driver error.
+\subsubsection{Pneumatics}
 
-Although an improvement from previous years, several inherent drawbacks to the 2008/2009 shift system exist. The air cylinder must be regularly refilled, which is a recurring expense. Air leaks were common, and air lines often came loose or melted after coming into contact with hot surfaces. 
+After deciding to not change away from pneumatics, an improved actuation scheme was proposed that would both improve the controllability and efficiency of the system. A diagram of the mechanical portion of the pneumatics system can be seen in Figure \ref{fig:pneumatics}. An on-board compressed air tank is fitted with a pressure regulator, which regulates the system pressure to approximately $120\,psi$. 4 electronically controlled pneumatic valves control the flow of air to and from 2 pneumatic actuators.
 
-The most serious drawback of the system is that the position of the cylinders is only binary or trinary. It is only possible to engage or disengage the clutch at a constant rate, determined by the pressure in the system, the flow rate through the valves, and the diameter of the piston. To launch the car, that is, in order to smoothly increase the momentum of the car from a stand-still, requires controlling the rate at which the clutch plates return into contact with each other. This level of control is not possible with a binary pneumatic system. In order to launch the car, a hand-lever was still required.
+\paragraph{Shift Actuator}
+
+The first actuator, visible on the left of Figure \ref{fig:pneumatics}, actuates the shift lever between 3 different positions: upshift, downshift, and rest-state. The transmission spring-loads the lever to automatically return to the rest-state, which we have set up to be half-way through the actuator stroke. Individually applying pressure to one port will pull the lever up, and to the other port, down.
+
+
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.5]{Figures/pneumatics.pdf}
+  \caption{Transmission control pneumatics design.}
+  \label{fig:pneumatics}
+\end{figure}
 
 The 2010 transmission control system further de-tasks the driver, improves shift performance, and improves accuracy by providing precise positioning of the clutch lever. This precision in control allows for a {}``partial-throttle launch'' without a hand-lever, and results in less mechanical strain on the clutch and transmission. 
 
@@ -227,7 +240,7 @@ Once completed, the pressure ranges for each system are saved and the module can
 \section{Wireless Telemetry System}
 \label{wireless_telemetry_system}
 
-The ability to communicate with the car wirelessly is a very important feature of most current FSAE designs. The ECU and DAQ provide sensor information that must be accessed wirelessly. Both provide a wired RS-232 serial interface to a Windows PC running proprietary software that communicates with each device. Each program expects to talk directly to the device through a Windows COM port.
+The ability to communicate with the car wirelessly is a very important feature of most current FSAE designs. The ECU and DAQ provide sensor information that must be accessed wirelessly. Both provide a wired RS-232 serial interface to a Windows PC running proprietary software that communicates with each device. Each program expects to talk directly to the device through a Windows COM port. Background information on the ECU's digital interfaces is described in Section \ref{sec:ecu_data}.
 
 The \emph{wireless telemetry system} provides a means for multiplexing these data streams and sending them wirelessly to laptops. The vehicle-side of the telemetry system consists of:
 
@@ -255,7 +268,7 @@ The wireless receiver is another XBee Pro Modem with a USB interface for connect
   \begin{figure}[H]
     \centering
       \input{Figures/tele_tx_overview}
-    \caption{The wireless telemetry system, transmitter side.\label{fig:tele_tx_overview}}
+    \caption{Block Diagram, Wireless Telemetry Module.\label{fig:tele_tx_overview}}
   \end{figure}
 
   \begin{figure}[H]

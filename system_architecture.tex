@@ -79,6 +79,8 @@ During steady wireless transmission, current draw from the bench power supply re
 
 The primary objective of the software running on the Telemetry Module is to push data around from various sources to various sinks. It uses the interrupt-driven USART drivers Mike wrote for both the on-board USARTs of the AT90, as well as the MAX3100 external USART extensively. These USART drivers are discussed in section ?? %TODO
 
+We tasked David Schilling, a computer science student on the Formula SAE team, with writing a software library to read and write the DAC's serial format.
+
 \subsection{MAX3100 SPI UART driver}
 
 An interrupt-driven driver was written to interface with the MAX3100 uart chip which allows asynchronous serial communication with the XBee modem on the Telemetry Module. The same circular buffer approach as with the internal USART drivers was taken, and in fact the drivers use very similar buffering code. Additionally, the software interfaces to the drivers were made as close as possible to allow interchangability by the main module software.

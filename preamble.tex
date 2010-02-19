@@ -18,11 +18,10 @@
 \usepackage{babel}
 \usepackage{fancyhdr}
 \usepackage{float}
-\usepackage{indentfirst}
 \usepackage[letterpaper]{geometry}
 \usepackage{graphicx}
+\usepackage{graphics}
 \usepackage{lastpage}
-\usepackage{nomencl}
 \usepackage{tikz}
 \usepackage{tikz-timing}[2009/05/15]
 %\usetikztiminglibrary{nicetabs}
@@ -36,9 +35,7 @@
 \usepackage{booktabs}
 \usepackage{supertabular}
 
-% the following is useful when we have the old nomencl.sty package
-\providecommand{\printnomenclature}{\printglossary}
-\providecommand{\makenomenclature}{\makeglossary}
+\usepackage{nomencl}
 \makenomenclature
 
 % Set Margins
@@ -67,6 +64,41 @@
 % }
 
 \usetikzlibrary{shapes,arrows,shadows,calc}
+
+% Define the arm and angle options
+\def\myarm{1cm}
+\def\myangle{0}
+\tikzset{
+  arm/.default=1cm,
+  arm/.code={\def\myarm{#1}}, % store value in \myarm
+  angle/.default=0,
+  angle/.code={\def\myangle{#1}} % store value in \myangle
+}
+
+% Define the myncbar to path
+\tikzset{
+    myncbar/.style = {to path={
+        % We need to calculate a couple of coordinates to help us draw
+        % the path. 
+        let
+            % Same as (\tikztotarget)++(\myangle:\myarm)
+            \p1=($(\tikztotarget)+(\myangle:\myarm)$)
+        in
+            -- ++(\myangle:\myarm) coordinate (tmp)
+            % Find the projection of the (tmp) coordinate
+            % on the line from the target to p1
+            -- ($(\tikztotarget)!(tmp)!(\p1)$)
+            -- (\tikztotarget)\tikztonodes
+    }}
+}
+
+\tikzstyle{module} = [ draw=blue!50!black!50, % 50% red, 50% black
+		       top color=white,
+		       bottom color=blue!50!black!20,
+		       rectangle,
+		      very thick,
+		      drop shadow,
+]
 
 \tikzstyle{block} = [ draw=red!50!black!50, % 50% red, 50% black
 		      top color=white,

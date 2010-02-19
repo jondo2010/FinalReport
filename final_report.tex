@@ -32,7 +32,7 @@ Abstract
 
 \newpage
 \phantomsection \label{listoffig}
-%\addcontentsline{toc}{chapter}{List of Figures}
+\addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
 
 \newpage
@@ -40,6 +40,7 @@ Abstract
 \addcontentsline{lot}{chapter}{List of Tables}
 \listoftables
 
+%\printglossary
 \printnomenclature{}
 
 \include{introduction}
@@ -54,12 +55,14 @@ Abstract
 \bibliographystyle{IEEEtran}
 \clearpage
 \addcontentsline{toc}{chapter}{\bibname}
-\bibliography{Reference/datasheets,IEEEfull}
+\bibliography{Reference/datasheets,Reference/literature,IEEEfull}
 
 
 \appendix
 
 \chapter{libxbee\label{cha:libxbee}}
+
+\include{ecu_can_spec_appx}
 
 % Finito
 

@@ -22,7 +22,7 @@ The vehicle as a whole is primarily a mechanical device, but carries several cri
 
 \nomenclature{MAP}{Manifold Absolute Pressure}
 \nomenclature{ECU}{Engine Control Unit}
-\nomenclature{DAQ}{Data Acquisition Device}
+\nomenclature{DAC}{Data Acquisition Device}
 \nomenclature{GPS}{Global Positioning System}
 
 The ICE is the stock \emph{Honda CBR600F4i} motorcycle engine. It is a 600 cm$^3$ super-sport class engine with an internal 6-speed chain driven transmission. 
@@ -65,7 +65,7 @@ Several tasks and responsibilities are best accomplished by electronic means, i.
 
 \subsection{Engine Control Unit (ECU)}
 
-A specialized third-party component called the \emph{Engine Control Unit} (ECU) controls the fuel injector and spark coil systems that in turn control the combustion cycle of the engine. The particular model of ECU used by the Formula SAE car is the S80Pro from DTAFast \cite{s60pro}. The ECU uses the O$_{2}$, MAP, cam position, and crank position sensors to adjust the fuel injector and spark coil timings. This keeps the engine running smoothly. The ECU features a traction control system that monitors wheel slip and cuts spark and fuel to provide traction when one of the wheels is slipping. The ECU also collects the various sensor readings and makes them available to other electronic devices at a fixed frequency through a shared data bus. 
+A specialized third-party component called the \emph{Engine Control Unit} (ECU) controls the fuel injector and spark coil systems that in turn control the combustion cycle of the engine. The particular model of ECU used by the Formula SAE car is the S80Pro from DTAFast \cite{s80pro}. The ECU uses the O$_{2}$, MAP, cam position, and crank position sensors to adjust the fuel injector and spark coil timings. This keeps the engine running smoothly. The ECU features a traction control system that monitors wheel slip and cuts spark and fuel to provide traction when one of the wheels is slipping. The ECU also collects the various sensor readings and makes them available to other electronic devices at a fixed frequency through a shared data bus. 
 
 \begin{figure}[H]
 	\centering
@@ -73,6 +73,17 @@ A specialized third-party component called the \emph{Engine Control Unit} (ECU) 
     \caption{The DTAFast S80Pro engine control unit.}
     \label{fig:s80pro_product}
 \end{figure}
+
+\subsubsection{ECU Data interface}
+\label{sec:ecu_data} 
+
+The ECU provides 2 digital communication methods:
+\begin{itemize}
+ \item An RS-232 link is used by the software that DTA provides for tuning and controlling the ECU. The serial protocol that the software uses is proprietary and undocumented.
+ \item A read-only CAN bus interface that emits ECU data at a fixed frequency. The message format for the CAN data is documented in Appendix \ref{cha:ecu_can_spec}.
+\end{itemize}
+ 
+\nomenclature{RS-232}{Recommended Standard 232, a byte-oriented serial communications protocol, typically asynchronous.}
 
 \subsection{Starting the ICE}
 
@@ -86,7 +97,20 @@ The clutch is actuated by a lever attached to the engine body. a pre-tensioned s
 
 The gear selector is also actuated by a lever attached to the engine body. The gear selector may be rotated in either direction from its rest point. Up-shifting is accomplished by rotating the lever in one direction, while down-shifting is accomplished by rotating the lever in the opposite direction. 
 
-Operating a purely mechanical manual transmission is taxing on the driver, and requires levers and linkages in the cockpit. Ideally, shifting between gears should happen as quickly as possible and require as little of the driver's attention as possible. Engagement of the clutch should be as smooth as possible. 
+Operating a purely mechanical manual transmission is taxing on the driver, and requires levers and linkages in the cockpit. Ideally, shifting between gears should happen as quickly as possible and require as little of the driver's attention as possible. Engagement of the clutch should be as smooth as possible.
+
+\subsubsection{Transmission Control}
+\label{sec:transmission_control_background}
+
+Formula SAE cars designed at the University of Manitoba have utilized an electro-pneumatic shift actuation system for the past several years. This system is controlled electronically from the steering wheel by paddles. A compressed air cylinder is used to feed air to pneumatic pistons, which apply force to the levers on the clutch shaft and shift shaft. Binary solenoid valves apply pressure to either side of the pistons. 
+
+In 2007, electronic control of the solenoid valves was realized by a set of switches on the steering wheel, which switched the low-current side of a set of relays. This in turn fed current to the solenoid valves, causing the cylinders to actuate the shift and clutch levers. In this system, the timing of the mechanical interaction with the transmission was entirely dependent on how long the driver held down the paddles. This required a lot of effort from the driver, and often resulted in missed shifts. It also caused heavy mechanical stress on the transmission. 
+
+The 2008/2009 Formula SAE car improved on the 2007 design by replacing the relays with high-current solid state drivers. The timing signals to the solenoid valves were precisely controlled with an ARM7 micro-controller. Shift timing could be programmed, and no longer depended on how long the paddles were held. This  reduced the effort required from the driver and also reduced possible driver error.
+
+Although an improvement from previous years, several inherent drawbacks to the 2008/2009 shift system exist. The system uses a lot of air, and the air cylinder must be regularly refilled, which is a recurring expense.
+
+The most serious drawback of the system is that the position of the cylinders is only binary or trinary. It is only possible to engage or disengage the clutch at a constant rate, determined by the pressure in the system, the flow rate coefficient through the valves, and the diameter of the piston. To launch the car, that is, in order to smoothly increase the momentum of the car from a stand-still, requires controlling the rate at which the clutch plates return into contact with each other. This level of control is not possible with a binary pneumatic system. In order to launch the car, a hand-lever was still required.
 
 \subsection{Intake}
 
@@ -105,11 +129,15 @@ From figure \ref{fig:irl_effect}, we see the two distinct torque peaks that occu
     \label{fig:irl_effect}
 \end{figure}
 
-\subsection{Data Acquisition Device (DAQ)}
+\subsection{Data Acquisition Device (DAC)}
 
-Another specialized third-party component called the \emph{Data Acquisition Device} (DAQ) is used to log and relay sensor data to other electronic devices.
+Another specialized third-party component called the \emph{Data Acquisition Device} (DAC) is used to log and relay sensor data to other electronic devices.
 
-The particular DAQ used is the model DL1 from Race Technology \cite{DL1Dsheet}. The DL1 is an expandable data logger with built-in 20-Hz GPS and 3-axis accelerometer. Race Technology provides a software suite that communicates with the DAQ using a documented serial protocol. Every item that the DAQ logs is output to its own channel in real time on the serial bus. It is also possible to configure the software to recognize new channels for arbitrary types of data. 
+The particular DAC used is the model DL1 from Race Technology \cite{DL1Dsheet}. The DL1 is an expandable data logger with built-in 20-Hz GPS and 3-axis accelerometer.
+
+\subsubsection{DAC Data Interface}
+
+Race Technology provides a software suite that communicates with the DAC using a documented serial protocol. Every item that the DAC logs is output to its own channel in real time on the serial port. It is also possible to configure the software to recognize new channels for arbitrary types of data.
 
 \begin{figure}[H]
 	\centering
