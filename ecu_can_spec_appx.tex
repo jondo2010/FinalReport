@@ -1,0 +1,26 @@
+\chapter{S Series CAN Stream Specification}
+\label{cha:ecu_can_spec}
+
+\section{General}
+
+\begin{center}
+\begin{tabular}{|l|l|}\hline
+CAN bus Baud Rate & 1 MBd\\\hline
+Identifiers & All 29Bit\\\hline
+4 Data Packets & All 8 Bytes Ea.\\\hline
+Send Frequency & 10 Hz\\\hline
+\end{tabular}
+\end{center}
+
+All Data Values 16 bit sent LSB first (little endian)
+
+\section{Data Packets}
+
+\centering
+\begin{tabular}{|l|l|l|l|l|}\hline
+Identifier & Data1 & Data2 & Data3 & Data4 \\ \hline\hline
+0x2000 & RPM & TPS\% & Water Temp C & Air Temp C \\ \hline
+0x2001 & MAP $KPa$ & Lambda $\cdot 1000$ & $km/h \cdot 10$ & Oil P. $KPa$ \\ \hline
+0x2002 & Fuel P $KPa$ & Oil Temp C & Battery $V \cdot 10$ & Fuel Con. $L/h \cdot 10$ \\ \hline
+0x2003 & Gear & Advance Deg $\cdot 10$ & Injection $ms \cdot 100$ &  Fuel Con. $L/100\,km \cdot 10$ \\ \hline
+\end{tabular}
